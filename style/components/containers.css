@@ -1,0 +1,46 @@
+.square-behind-grid{
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 1152px;
+    height: 800px;
+    margin: 0 auto;
+    background-color: #383F4A;
+    border-radius: 20px;
+    border: solid 2px #2AC6FF;
+}
+
+.grid{
+    padding: 42px 60px 41px 60px;
+    overflow: hidden;
+}
+
+
+.container{
+    position: relative;
+    border-radius: 5px;
+}
+.container-header{
+    width: fit-content;
+}
+
+.text-container{
+    overflow: hidden;
+}
+
+/*WELCOME BOX*/
+#welcome {
+    background-color: #525665;
+    height: 321.86;
+    width: 724.84px;
+    padding-top: 27px;
+    padding-left: 13px;
+}
+
+#about-me{
+    background-color: #676D85;
+    width: 269.13px;
+    height: 460.62px;
+    top: 112px;
+}
+
