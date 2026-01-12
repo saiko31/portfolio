@@ -1,0 +1,29 @@
+@import "components.css";
+
+body{
+    margin: 0;
+    min-height: 100vh;
+    background-color: #f8f8f8;
+    background-image: radial-gradient(
+        circle at 125% 130%,
+        #000000 0%,
+        transparent 44%
+        
+    );
+
+    background: radial-gradient(
+        circle at -25% -30%,
+
+    );
+}
+
+.top-button{
+    background-color: transparent;
+    border: 2px solid #ffffff;
+    height: 130px;
+    width: 128px;
+    border-radius: 20px;  
+}
+.top-button:hover{
+    border: 4px solid #62C3FF;
+}
