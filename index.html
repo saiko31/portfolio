@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,84 +8,99 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style/style.css">
-
-
 </head>
 <body>
-    <!--I couldn't think of a best name lol-->
-    <div class="square-behind-grid">
-        <div class="grid" id="main-grid">
-            <div class="container" id="welcome">
-                <div class="container-header">
+    <main class="portfolio-container">
+        <div class="portfolio-grid">
+            <!-- Welcome Section -->
+            <section class="card welcome-card">
+                <header class="card-header">
                     <h2>welcome,</h2>
-                </div>
-                <div class="text-container" id="welcome-text">
+                </header>
+                <div class="card-content">
                     <p>I'm Alexander San Agustin, a computer science student aspiring to be a DevOps engineer.
                         My goal is to make people's life a little easier with my work, one line of code at a time.
                     </p>
                 </div>
-            </div>
-            <div class="container" id="about-me">
-                <div class="container-header">
+            </section>
+
+            <!-- About Me Section -->
+            <section class="card about-card">
+                <header class="card-header">
                     <h2>about me,</h2>
-                </div>
-                <div class="text-container" id="aboutMe-text">
+                </header>
+                <div class="card-content">
                     <p>I have experience in:</p>
-                </div>
-                <div class="list-container">
                     <ul class="skill-list">
                         <li>Coding <span>(Java, Python, JS)</span></li>
-                        <li>WebDev <span>(HTML, CSS, Node.Js)</span></li>
+                        <li>WebDev<span>(HTML, CSS, Node.Js)</span><div class="irony-box">Allegedly, emergency use only</div></li>
                         <li>Containerization <span>(Docker)</span></li>
                         <li>Cloud <span>(AWS)</span></li>
-                        <li>Database Systems<span>(mySQL,MS Access)</span></li>
+                        <li>Database Systems<span>(mySQL, MS Access)</span></li>
                         <li>Networking</li>
                     </ul>
-                    <div class="text-container">
-                        <p>My greatest passions in life are videogames, technology, <span class="italics">y la pasion de mi vida: <span class="bold">el Cruz Azul!</span></span><span> If you know.. you know..</span></p>
-                    </div>
+                    <p>My greatest passions in life are videogames, technology, <span class="italics">y la pasion de mi vida: <span class="bold">el Cruz Azul!</span></span><span class="irony"> If you know.. you know..</span></p>
                 </div>
-            </div>
-            <div class="container" id="homelab">
-                <div class="lilContainer-text">
+            </section>
+
+            <!-- Home Lab Section -->
+            <section class="card homelab-card">
+                <div class="card-content">
+                    <div class="icon" id="server-icon">
+                        <img src="assets/homelab_icon.png" alt="Server Icon">
+                    </div>
                     <h3>home-lab</h3>
                 </div>
-                
-            </div>
-            <div class="container" id="resume">
-                <div class="lilContainer-text">
+            </section>
+
+            <!-- Resume Section -->
+            <section class="card resume-card">
+                <div class="card-content">
                     <h3>resume</h3>
                 </div>
-            </div>
-            <div class="container" id="minigame">
-                <div class="lilContainer-text">
+            </section>
+
+            <!-- Minigame Section -->
+            <section class="card minigame-card">
+                <div class="card-content">
                     <h3>coming-soon</h3>
                 </div>
-            </div>
-            <div class="container" id="page-stats">
-                <div class="container-header">
+            </section>
+
+            <!-- Page Stats Section -->
+            <section class="card stats-card">
+                <header class="card-header">
                     <h2>page-stats,</h2>
+                </header>
+                <div class="card-content">
+                    <!-- Stats content will go here -->
                 </div>
-            </div>
-            <div class="container" id="education">
-                <div class="container-header">
+            </section>
+
+            <!-- Education Section -->
+            <section class="card education-card">
+                <header class="card-header">
                     <h2>education,</h2>
-                </div>
-                <div class="text-container">
+                </header>
+                <div class="card-content">
                     <p>Kennesaw State University, GA</p>
+                    <div class="icon">
+                        <img src="assets/KSU_icon.png" alt="Kennesaw State University Icon">
+                    </div>
                 </div>
-            </div>
-            <div class="container" id="job-status">
-                <div class="container-header">
+            </section>
+
+            <!-- Employment Status Section -->
+            <section class="card employment-card">
+                <header class="card-header">
                     <h2>employment-status,</h2>
-                </div>
-                <div class="text-container">
+                </header>
+                <div class="card-content">
                     <p>seeking for internship</p>
                 </div>
-            </div>
+            </section>
         </div>
-    </div>
-    
+    </main>
 </body>
 </html>
 

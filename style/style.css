@@ -1,17 +1,29 @@
 @import "/style/components/containers.css";
+@import "/style/components/icons.css";
 
-body{
+* {
+    box-sizing: border-box;
+}
+
+body {
     margin: 0;
     background-color: #2D323B;
     font-family: "Roboto Mono", monospace;
     color: #FFF9D1;
     font-size: 15px;
-    padding: 1em;
+    line-height: 1.6;
 }
 
 
-h2{
-    color: #2ac6ff;
-    font-size: 16px;
+@media (max-width: 768px) {
+    body {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 16px;
+    }
 }
 

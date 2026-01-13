@@ -1,0 +1,10 @@
+#server-icon{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-bottom: 1em;
+}
+
+#server-icon img{
+    height: 64px;
+}
