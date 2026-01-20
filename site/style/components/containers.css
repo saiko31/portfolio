@@ -56,7 +56,6 @@
 }
 
 .card-content {
-    display: flex;
     color: #FFF9D1;
     line-height: 1.6;
 }
@@ -82,9 +81,14 @@
 }
 
 .homelab-card {
-    background-color: #525665;
-    width: 269.13px;
-    height: 150px;
+    grid-area: homelab;
+    background-color: #5A5876;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 13px;
+    min-height: 150px;
+    cursor: pointer;
 }
 
 .resume-card {
