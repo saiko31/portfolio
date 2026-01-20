@@ -14,11 +14,19 @@
 /* Grid layout - responsive */
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(269px, 1fr));
-    gap: 7px;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto;
+    gap: 10px;
+    width: 100%;
+    max-width: 1200px;
+
+    /* Specific grid areas for larger screens */
+    grid-template-areas:
+        "welcome welcome welcome about"
+        "welcome welcome welcome about"
+        "homelab resume minigame about"
+        "stats stats stats education"
+        "stats stats stats employment";
 }
 
 /* Card base styles */
@@ -47,68 +55,98 @@
     font-weight: 600;
 }
 
-.card-content {
+.secondary-card{
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(255, 249, 209, 0.1);
+    border-radius: 6px;
+    justify-content: baseline;
+
+}
+
+.content-wrapper{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-content {
     color: #FFF9D1;
     line-height: 1.6;
 }
 
 .card-content h3 {
     color: #FFF9D1;
-    font-size: 1.5rem;
+    font-size: 24px;
     margin: 0;
+    text-align: center;
 }
 
 /* Specific card styles */
 .welcome-card {
+    grid-area: welcome;
     background-color: #525665;
-    height: 321.86;
-    width: 724.84px;
-    padding-top: 27px;
-    padding-left: 13px;
+    min-height: 200px;
 }
 
 .about-card {
+    grid-area: about;
     background-color: #676D85;
-    width: 269.13px;
-    height: 460.62px;
-    top: 112px;
+    min-height: 300px;
 }
 
 .homelab-card {
-    background-color: #525665;
-    width: 269.13px;
-    height: 150px;
+    grid-area: homelab;
+    background-color: #5A5876;
+    padding-left: 13px;
+    min-height: 150px;
+    cursor: pointer;
 }
 
 .resume-card {
-    background-color: #676D85;
-    width: 269.13px;
-    height: 150px;
+    grid-area: resume;
+    background-color: #526870;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 13px;
+    min-height: 150px;
+    cursor: pointer;
 }
 
 .minigame-card {
-    background-color: #525665;
-    width: 269.13px;
-    height: 150px;
+    grid-area: minigame;
+    background-color: #785B6C;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 13px;
+    min-height: 150px;
 }
 
 .stats-card {
-    background-color: #676D85;
-    width: 724.84px;
-    height: 150px;
+    grid-area: stats;
+    background-color: #495171;
+    min-height: 150px;
 }
 
 .education-card {
-    background-color: #525665;
-    width: 362.42px;
-    height: 120px;
+    grid-area: education;
+    background-color: #4A4E61;
+    min-height: 120px;
 }
 
 .employment-card {
-    background-color: #676D85;
-    width: 362.42px;
-    height: 120px;
+    grid-area: employment;
+    background-color: #5B6178;
+    min-height: 120px;
 }
 
 /* Skills list styling */
@@ -181,7 +219,7 @@
     }
 
     .card-content h3 {
-        font-size: 1.2rem;
+        font-size: calc(1rem * var(--scale-factor));
     }
 }
 
@@ -193,6 +231,15 @@
 
     .portfolio-grid {
         grid-template-columns: 1fr;
+        grid-template-areas:
+            "welcome"
+            "about"
+            "homelab"
+            "resume"
+            "minigame"
+            "stats"
+            "education"
+            "employment";
         gap: 1rem;
     }
 
