@@ -60,6 +60,13 @@
     line-height: 1.6;
 }
 
+.secondary-card{
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(255, 249, 209, 0.1);
+    border-radius: 6px;
+}
+
 .card-content h3 {
     color: #FFF9D1;
     font-size: 24px;
