@@ -1,4 +1,22 @@
-#ignoring personal files, like resume
+# Dependencies
+backend/node_modules/
+node_modules/
 
+# Variables de entorno
+.env
+backend/.env
 
-backend/private
+# Docker
+db_data/
+
+# Archivos de Sistema y Editores
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Bases de datos locales
+*.db
+*.log
+
+# Archivos temporales de npm
+npm-debug.log*

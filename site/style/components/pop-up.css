@@ -1,0 +1,32 @@
+.pop-up{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #2d1b1b; /* Dark red background */
+    color: #ff9999;
+    border-left: 4px solid #ff4444;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+}
+
+.pop-up.hidden {
+    transform: translateY(150%); /* Slides it off-screen */
+    pointer-events: none;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.close-btn:hover { opacity: 1; }
