@@ -1,6 +1,6 @@
 
 const CONFIG = {
-    rootURL : `http://localhost:8080`,
+    rootURL : `http://asanagus.me`,
     syncInterval: 30000, // sync stats every 30s
     uptimeInterval: 1000 //update uptime every second
 };
