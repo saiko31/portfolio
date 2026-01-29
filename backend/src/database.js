@@ -1,5 +1,5 @@
 const path = require('path');
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 const dotenv = require('dotenv');
 
 dotenv.config({path: path.join(__dirname, '../.env')});
