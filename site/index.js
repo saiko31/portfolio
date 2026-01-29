@@ -1,6 +1,6 @@
 
 const CONFIG = {
-    rootURL : `http://asanagus.me`,
+    rootURL : window.location.origin,
     syncInterval: 30000, // sync stats every 30s
     uptimeInterval: 1000 //update uptime every second
 };
