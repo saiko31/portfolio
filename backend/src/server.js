@@ -5,6 +5,12 @@ const db = require('./database');
 const crypto = require('crypto');
 
 const app = express();
+
+app.use((req, res, next) => {
+    console.log(`📢 Petición recibida: ${req.method} ${req.url}`);
+    next();
+});
+
 app.set('trust proxy', true);
 
 const serverStartTime = Date.now();
