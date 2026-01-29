@@ -1,5 +1,7 @@
 @import "./components/containers.css";
 @import "./components/icons.css";
+@import "./components/pop-up.css";
+@import "./components/pulse.css";
 
 * {
     box-sizing: border-box;

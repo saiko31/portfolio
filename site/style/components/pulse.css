@@ -1,0 +1,23 @@
+
+.status-dot {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ef4444; /* Rojo por defecto */
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+    transition: all 0.3s ease;
+}
+
+.status-dot.online {
+    background-color: #22c55e;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}

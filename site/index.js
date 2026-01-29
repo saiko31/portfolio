@@ -1,35 +1,95 @@
 
-let startStamp = null;// server start time
-const port = 8080;
+const CONFIG = {
+    rootURL : `http://localhost:8080`,
+    syncInterval: 30000, // sync stats every 30s
+    uptimeInterval: 1000 //update uptime every second
+};
 
-const rootURL = `http://localhost:${port}`;
+let state = {
+    startStamp: null,
+    totalVisits : null,
+    todayVisits : null,
+    isConnected : false
+};
+
+// --- UI utilities ---
 
 function showErroMsg(msg){
     const toast = document.getElementById('error-popup');
     const text = document.getElementById('error-text');
-    
+
+    if (!toast || !text) return;
     text.textContent = msg;
+    toast.classList.add('active');
     toast.classList.remove('hidden');
 
-    setTimeout(() => {
-        closeToast();
-    }, 5000);
+    //updating status pulse to red
+    updateStatusIndicator(false);
+    
+    setTimeout(() => { toast.classList.add('hidden') }, 5000);
 }
 
 
-function showPopUp(){
-    //CODE HERE
+function closePopUp(id) {
+    const popup = document.getElementById(id);
+    if (popup) {
+        popup.classList.remove('active');
+        popup.classList.remove('show'); 
+    }
 }
 
+// --- Data Logic ---
 
-function closePopUp(popupId){
-    document.getElementById(popupId).classList.add('hidden');
+async function syncStats(){
+    try{
+
+        const url = `${CONFIG.rootURL}/api/stats`;
+
+        const response = await fetch(url);
+        if(!response.ok) throw new Error("Server unreachable.");
+
+
+        //getting json
+        const result = await response.json();
+
+        //console.log(result);
+
+
+        //updating stats        
+        if(result.success){
+            state.startStamp = result.uptime;
+            state.totalVisits = result.totalVisits;
+            state.todayVisits = result.todayVisits;
+            state.isConnected = true;
+
+            updateStatusIndicator(true);
+            updateUI();
+
+            //console.log("json recibido")
+        }
+    }
+    catch(error){
+        console.error("Log: Failed to sync with server time.", error);
+        state.isConnected = false;
+        updateStatusIndicator(false);
+        showErroMsg("Lost connection to homeLab.");
+    }
 }
 
+function updateUI(){
+    if(!state.isConnected) return;
 
-function updateRunTime(start){
-    const now = Date.now();
-    const diff = now - start;
+    // Actualizamos contadores de visitas (con formato 0000 como en tu diseño)
+    const formatVisits = (num) => num.toString().padStart(4, '0');
+    
+    document.getElementById("total-visits").textContent = formatVisits(state.totalVisits);
+    document.getElementById("today-visits").textContent = formatVisits(state.todayVisits);
+}
+
+function updateTimeDisplay(){
+    if(!state.startStamp || !state.isConnected) return;
+
+    const diff = Date.now() - state.startStamp;
 
     const d = Math.floor(diff / (1000 * 60 * 60 * 24));
     const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -37,67 +97,40 @@ function updateRunTime(start){
     const s = Math.floor((diff % (1000 * 60)) / 1000);
 
     const format = (num) => num.toString().padStart(2, '0');
-
-    const uptimeElement = document.getElementById("uptime");
     
-    if (uptimeElement){
-        uptimeElement.textContent = `${d}d ${format(h)}h ${format(m)}m ${format(s)}s`;
-    };
-
+    document.getElementById("uptime").textContent = `${d}d ${format(h)}h ${format(m)}m ${format(s)}s`;
 }
 
-async function fetchStats(){
-    try{
-        const response = await fetch (`${rootURL}/stats`, {
-            method : 'GET'
-        });
 
-        if(!response.ok){
-            throw new Error(`Error fetching stats! ->  ${response.status}`)
-        }
+function updateStatusIndicator(active) {
+    const led = document.getElementById('status-led');
+    if (!led) return;
 
-        const data =  await response.text();
-
-        startStamp = parseInt(data);
-    }
-    catch(error){
-        console.error("Log: Failed to sync with server time.", err);
-        showErroMsg("Real-time monitoring sync failed.");
+    if (active) {
+        led.classList.add('online');
+    } else {
+        led.classList.remove('online');
     }
 }
 
-const resumeBtn = document.getElementById('resumeButton');
+// --- Event Listeners ---
 
-resumeBtn.addEventListener('click', async () =>{
+document.getElementById('resumeButton').addEventListener('click', async () =>{
     try{
-        const response = await fetch (`${rootURL}/files/resume`, {
-            method: 'GET'
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'Alexander San Agustin-resume.pdf';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);
+        window.location.href = `${CONFIG.rootURL}/files/resume`;
     } catch(error) {
-        console.error("log: " , error);
-        showErroMsg("Connection to the server failed. Re-trying in 30s...")
-
+        showErroMsg("Could not download resume. Try again later.")
     }
 });
 
-fetchStats();
+// Initializing
 
-setInterval(() =>{
-    if(startStamp){
-        updateRunTime(startStamp);
-    }
-}, 1000);
+// initial load
+syncStats();
+
+
+//uptime clock
+setInterval(updateTimeDisplay, CONFIG.uptimeInterval);
+
+//resync data
+setInterval(syncStats, CONFIG.syncInterval);
