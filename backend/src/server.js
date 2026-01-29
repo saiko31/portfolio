@@ -78,7 +78,7 @@ function getHashedIP(req){
 
 
 const port = 8080;
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
     console.log(`Server initialized at port ${port}.`);
-    console.log(`Local: http://localhost:${port}`);
+    console.log(`listening all interfaces (0.0.0.0)`);
 });
