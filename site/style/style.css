@@ -2,6 +2,7 @@
 @import "./components/icons.css";
 @import "./components/pop-up.css";
 @import "./components/pulse.css";
+@import "./components/side-links.css";
 
 * {
     box-sizing: border-box;

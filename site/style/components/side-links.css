@@ -1,0 +1,41 @@
+.side-links {
+    position: fixed;   
+    left: 10px;       
+    top: 75%;          
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;        
+    z-index: 1000;     
+}
+
+.link-card {
+    width: 40px;      
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.link-btn img {
+    width: 24px;       
+    height: 24px;
+    display: block;
+}
+
+
+.link-card:hover {
+    left: 15px;
+    background-color: #555;
+    transform: scale(1.1);
+}
+
+#github{
+    background-color: #020408;
+}
+
+#linkedin{
+    background-color: #F4F2EE;
+}

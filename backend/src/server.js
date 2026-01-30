@@ -16,7 +16,6 @@ app.set('trust proxy', true);
 const serverStartTime = Date.now();
 
 
-
 app.use(cors({
     origin: 'https://asanagus.me' 
 }));

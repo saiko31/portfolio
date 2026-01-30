@@ -183,15 +183,18 @@
 
 .skill-list li {
     margin-bottom: 0.5rem;
-    padding: 0.5rem;
+    padding: 1rem;
     background-color: rgba(255, 249, 209, 0.1);
     border-radius: 6px;
+    font-weight: bold;
     border-left: 3px solid #2ac6ff;
 }
 
+
 .skill-list li span {
     color: #2ac6ff;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    font-weight: normal;
 }
 
 /* Text styling */
