@@ -28,7 +28,6 @@
 
 .link-card:hover {
     left: 15px;
-    background-color: #555;
     transform: scale(1.1);
 }
 
