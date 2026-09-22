@@ -1,0 +1,15 @@
+# Example Cloudflare Tunnel configuration for HomeLab node
+# Run using: cloudflared tunnel run <tunnel-name>
+
+tunnel: <YOUR-TUNNEL-UUID>
+credentials-file: /etc/cloudflared/<YOUR-TUNNEL-UUID>.json
+
+ingress:
+  # Internal Docker container or localhost service
+  - hostname: homelab.asanagus.me
+    service: http://localhost:8080
+    originRequest:
+      connectTimeout: 2s
+      noTLSVerify: false
+  # Catch-all rule (required)
+  - service: http_status:404

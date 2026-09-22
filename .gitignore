@@ -1,10 +1,11 @@
 # Dependencies
-backend/node_modules/
 node_modules/
 
-# Variables de entorno
+# Environment Variables
 .env
-backend/.env
+.env.*
+!.env.example
+
 
 # Docker
 db_data/
@@ -20,3 +21,8 @@ Thumbs.db
 
 # Archivos temporales de npm
 npm-debug.log*
+
+# Monorepo build artifacts & cache
+dist/
+.astro/
+.wrangler/

@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  web:
+    image: ${IMAGE_TAG:-ghcr.io/saiko31/portfolio:latest}
+    container_name: portfolio-node
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:3000"
+    environment:
+      - NODE_ENV=production
+      - NODE_ID=${NODE_ID:-HomeLab-Node}
+      - NODE_REGION=${NODE_REGION:-HomeLab-Proxmox}
+      - PORT=3000
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s

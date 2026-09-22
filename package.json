@@ -1,0 +1,19 @@
+{
+  "name": "portfolio-workspace",
+  "version": "2.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "workers/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@portfolio/web",
+    "build": "npm run build --workspaces --if-present",
+    "start": "npm run start --workspace=@portfolio/web",
+    "worker:dev": "npm run dev --workspace=@portfolio/edge-router",
+    "worker:deploy": "npm run deploy --workspace=@portfolio/edge-router"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

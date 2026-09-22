@@ -1,0 +1,10 @@
+name = "portfolio-edge-router"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+# Default environment variables for local emulation
+# In production, set these via Cloudflare Dashboard or wrangler secret
+[vars]
+PRIMARY_ORIGIN = "http://localhost:3001"
+STANDBY_ORIGIN = "http://localhost:3002"
+TIMEOUT_MS = 2500
