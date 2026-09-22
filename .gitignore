@@ -1,10 +1,11 @@
 # Dependencies
-backend/node_modules/
 node_modules/
 
-# Variables de entorno
+# Environment Variables
 .env
-backend/.env
+.env.*
+!.env.example
+
 
 # Docker
 db_data/
