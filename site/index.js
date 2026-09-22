@@ -9,7 +9,7 @@ let state = {
     startStamp: null,
     totalVisits : null,
     todayVisits : null,
-    isConnected : false
+    lastUpdate: null
 };
 
 // --- UI utilities ---
@@ -60,6 +60,7 @@ async function syncStats(){
             state.startStamp = result.uptime;
             state.totalVisits = result.totalVisits;
             state.todayVisits = result.todayVisits;
+            state.lastUpdate = result.uptime.toString();
             state.isConnected = true;
 
             updateStatusIndicator(true);
@@ -84,6 +85,7 @@ function updateUI(){
     
     document.getElementById("total-visits").textContent = formatVisits(state.totalVisits);
     document.getElementById("today-visits").textContent = formatVisits(state.todayVisits);
+    document.getElementByIdById("update-date").textContent = state.lastUpdate;
 }
 
 function updateTimeDisplay(){

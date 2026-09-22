@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const app = express();
 
 app.use((req, res, next) => {
-    console.log(`📢 Petición recibida: ${req.method} ${req.url}`);
+    console.log(`Petición recibida: ${req.method} ${req.url}`);
     next();
 });
 
@@ -27,22 +27,19 @@ app.get('/api/stats', async (req,res) =>{
     const today = new Date().toISOString().split('T')[0];
 
     try {
-        // 1. Registrar la visita (si es nueva hoy)
         await db.execute(`
             INSERT INTO log_visits (ip_hash, visit_date) 
             VALUES (?, ?) 
             ON DUPLICATE KEY UPDATE id=id
         `, [ipHash, today]);
 
-        // 2. Obtener los conteos (Total y Hoy)
         const [[totalRes]] = await db.execute('SELECT COUNT(*) as count FROM log_visits');
         const [[todayRes]] = await db.execute('SELECT COUNT(*) as count FROM log_visits WHERE visit_date = ?', [today]);
 
-        // 3. Respuesta completa para el frontend
         res.json({
             success: true,
             status: "online",
-            uptime: serverStartTime, // Mantenemos el uptime que tenías en stats
+            uptime: serverStartTime,
             totalVisits: totalRes.count,
             todayVisits: todayRes.count
         });
@@ -56,7 +53,7 @@ app.get('/api/stats', async (req,res) =>{
 // Resume logic
 
 app.get('/files/resume' ,(req,res)=>{
-    const filePath = path.join(__dirname, "..", './private/resume.pdf');
+    // const filePath = path.join(__dirname, "..", './private/resume.pdf');
     res.download(filePath, 'Alexander San Agustin - Resume.pdf', (err) => {
         if(err){
             console.error("Error getting archive:", err);
