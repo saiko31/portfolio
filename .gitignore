@@ -20,3 +20,8 @@ Thumbs.db
 
 # Archivos temporales de npm
 npm-debug.log*
+
+# Monorepo build artifacts & cache
+dist/
+.astro/
+.wrangler/

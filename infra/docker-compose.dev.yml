@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Primary Node (Simulates HomeLab Server)
+  primary-node:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+    container_name: portfolio-primary
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - NODE_ID=HomeLab-Local
+      - NODE_REGION=HomeLab-Proxmox
+      - PORT=3000
+    restart: unless-stopped
+
+  # Standby Node (Simulates Oracle Cloud Free Tier Instance)
+  standby-node:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+    container_name: portfolio-standby
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=production
+      - NODE_ID=Oracle-Standby
+      - NODE_REGION=Oracle-US-Ashburn
+      - PORT=3000
+    restart: unless-stopped
