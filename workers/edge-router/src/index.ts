@@ -37,7 +37,7 @@ export default {
         return new Response(primaryResponse.body, {
           status: primaryResponse.status,
           statusText: primaryResponse.statusText,
-          headers: newHeaders,
+          headers: newHeaders
         });
       }
 

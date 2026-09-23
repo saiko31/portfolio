@@ -1,17 +1,340 @@
 ---
+import os from 'node:os';
 
+// Leer variables de entorno del contenedor/proceso
+const nodeId = process.env.NODE_ID || 'local-dev';
+const nodeRegion = process.env.NODE_REGION || 'local';
+const hostname = os.hostname();
+const platform = `${os.type()} ${os.arch()}`;
+
+// Encabezados inyectados por Cloudflare Worker (si pasa por el Edge Router)
+const activeNodeHeader = Astro.request.headers.get('x-active-node') || 'Direct (Sin Edge Worker)';
+const failoverHeader = Astro.request.headers.get('x-failover-triggered') || 'false';
+const edgeLatencyHeader = Astro.request.headers.get('x-edge-latency-ms') || 'N/A';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alexander San Agustin - Infraestructura HA</title>
+  <style>
+    :root {
+      --bg: #12141a;
+      --card-bg: #1c202a;
+      --border: #2e3547;
+      --text: #e2e8f0;
+      --text-muted: #8b95a8;
+      --accent: #38bdf8;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    h1 { font-size: 1.5rem; color: var(--accent); margin-bottom: 0.25rem; }
+    p.sub { color: var(--text-muted); font-size: 0.95rem; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #f1f5f9;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+    .stat-box {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border);
+      padding: 0.75rem;
+      border-radius: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    .stat-value {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-top: 0.25rem;
+      word-break: break-all;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .badge-green { background: rgba(34, 197, 94, 0.2); color: var(--green); border: 1px solid var(--green); }
+    .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--red); border: 1px solid var(--red); }
+    .badge-yellow { background: rgba(245, 158, 11, 0.2); color: var(--yellow); border: 1px solid var(--yellow); }
+    .badge-blue { background: rgba(56, 189, 248, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    button {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: opacity 0.2s;
+    }
+    button:hover { opacity: 0.85; }
+    .btn-danger { background: var(--red); color: white; }
+    .btn-success { background: var(--green); color: white; }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    ul.endpoints {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    ul.endpoints li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.2);
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .links-footer {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
+    #chaos-status-banner {
+      display: none;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin-top: 0.75rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Alexander San Agustin</h1>
+      <p class="sub">Software Engineer & DevOps • Banco de Pruebas de Alta Disponibilidad (HA)</p>
+    </header>
+
+    <!-- 1. Telemetría de Borde & Nodo -->
+    <section class="card">
+      <h2>
+        <span>Telemetría de Infraestructura</span>
+        <span id="health-badge" class="badge badge-green">VERIFICANDO...</span>
+      </h2>
+      <div class="grid">
+        <div class="stat-box">
+          <div class="stat-label">Nodo Activo (Edge Router)</div>
+          <div class="stat-value" id="val-active-node">{activeNodeHeader}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Conmutación (Failover)</div>
+          <div class="stat-value" id="val-failover">{failoverHeader === 'true' ? '⚠️ ACTIVO' : 'NORMAL'}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Latencia Edge</div>
+          <div class="stat-value" id="val-edge-latency">{edgeLatencyHeader} ms</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Identificador de Nodo</div>
+          <div class="stat-value" id="val-node-id">{nodeId}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Región / Entorno</div>
+          <div class="stat-value" id="val-node-region">{nodeRegion}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Uptime del Proceso</div>
+          <div class="stat-value" id="val-uptime">0s</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Hostname del Host</div>
+          <div class="stat-value">{hostname}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Arquitectura y SO</div>
+          <div class="stat-value">{platform}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Simulador de Caos & Resiliencia -->
+    <section class="card">
+      <h2>Simulador de Resiliencia (Chaos Testing)</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">
+        Fuerza a este nodo a responder con <code>HTTP 503 Service Unavailable</code> durante 30 segundos.
+        Si la petición pasa por el <strong>Cloudflare Worker</strong>, el Edge detectará la falla y redirigirá
+        el tráfico automáticamente al nodo secundario en tiempo real.
+      </p>
+
+      <div id="chaos-status-banner" class="badge-red">
+        🚨 Simulación de Fallo Activa en este nodo. Segundos restantes: <span id="chaos-seconds">30</span>s
+      </div>
+
+      <div class="btn-group">
+        <button id="btn-trigger-chaos" class="btn-danger">🚨 Simular Fallo (30s)</button>
+        <button id="btn-reset-chaos" class="btn-success">✅ Restaurar Nodo</button>
+      </div>
+    </section>
+
+    <!-- 3. Endpoints de Verificación -->
+    <section class="card">
+      <h2>Endpoints de la API Interna</h2>
+      <ul class="endpoints">
+        <li>
+          <span><code>GET /api/health</code> (Healthcheck de nodo)</span>
+          <a href="/api/health" target="_blank">Abrir JSON &rarr;</a>
+        </li>
+        <li>
+          <span><code>GET /api/node-info</code> (Métricas de sistema)</span>
+          <a href="/api/node-info" target="_blank">Abrir JSON &rarr;</a>
+        </li>
+        <li>
+          <span><code>GET /api/simulate-failure</code> (Estado de caos)</span>
+          <a href="/api/simulate-failure" target="_blank">Abrir JSON &rarr;</a>
+        </li>
+        <li>
+          <span><code>GET /resume.pdf</code> (Curriculum Vitae)</span>
+          <a href="/resume.pdf" target="_blank">Ver PDF &rarr;</a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 4. Enlaces de Perfil -->
+    <footer class="card">
+      <h2>Enlaces Profesionales</h2>
+      <div class="links-footer">
+        <a href="https://github.com/saiko31" target="_blank" rel="noopener noreferrer">GitHub (saiko31)</a>
+        <a href="https://www.linkedin.com/in/alexander-san-agustin-melendez-86a875347" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="/resume.pdf" download="Alexander San Agustin - Resume.pdf">Descargar Resume</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const badge = document.getElementById('health-badge');
+    const chaosBanner = document.getElementById('chaos-status-banner');
+    const chaosSecondsEl = document.getElementById('chaos-seconds');
+    const uptimeEl = document.getElementById('val-uptime');
+    const btnTriggerChaos = document.getElementById('btn-trigger-chaos');
+    const btnResetChaos = document.getElementById('btn-reset-chaos');
+
+    function formatUptime(seconds) {
+      const d = Math.floor(seconds / (3600 * 24));
+      const h = Math.floor((seconds % (3600 * 24)) / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      return `${d > 0 ? d + 'd ' : ''}${h}h ${m}m ${s}s`;
+    }
+
+    async function pollTelemetry() {
+      try {
+        const start = performance.now();
+        const res = await fetch('/api/health');
+        const latency = Math.round(performance.now() - start);
+
+        if (res.status === 200) {
+          badge.textContent = `200 OK (${latency}ms)`;
+          badge.className = 'badge badge-green';
+          chaosBanner.style.display = 'none';
+        } else if (res.status === 503) {
+          const data = await res.json();
+          badge.textContent = `503 DEGRADADO`;
+          badge.className = 'badge badge-red';
+          chaosBanner.style.display = 'block';
+          if (chaosSecondsEl && data.remainingSeconds !== undefined) {
+            chaosSecondsEl.textContent = data.remainingSeconds;
+          }
+        } else {
+          badge.textContent = `STATUS ${res.status}`;
+          badge.className = 'badge badge-yellow';
+        }
+      } catch (err) {
+        badge.textContent = 'UNREACHABLE';
+        badge.className = 'badge badge-red';
+      }
+
+      // Actualizar uptime del nodo
+      try {
+        const nodeRes = await fetch('/api/node-info');
+        if (nodeRes.ok) {
+          const info = await nodeRes.json();
+          if (uptimeEl) uptimeEl.textContent = formatUptime(info.uptime);
+        }
+      } catch (_) {}
+    }
+
+    // Handlers del simulador de caos
+    btnTriggerChaos?.addEventListener('click', async () => {
+      try {
+        await fetch('/api/simulate-failure?duration=30', { method: 'POST' });
+        pollTelemetry();
+      } catch (err) {
+        alert('Error al activar simulación de fallo: ' + err.message);
+      }
+    });
+
+    btnResetChaos?.addEventListener('click', async () => {
+      try {
+        await fetch('/api/simulate-failure', { method: 'DELETE' });
+        pollTelemetry();
+      } catch (err) {
+        alert('Error al restaurar nodo: ' + err.message);
+      }
+    });
+
+    // Iniciar sondeo inicial y loop cada 2 segundos
+    pollTelemetry();
+    setInterval(pollTelemetry, 2000);
+  </script>
+</body>
 </html>
