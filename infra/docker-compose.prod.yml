@@ -2,15 +2,18 @@ version: '3.8'
 
 services:
   web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
     image: ${IMAGE_TAG:-ghcr.io/saiko31/portfolio:latest}
     container_name: portfolio-node
     restart: unless-stopped
     ports:
-      - "${PORT:-8080}:3000"
+      - "${PORT:-3000}:3000"
     environment:
       - NODE_ENV=production
-      - NODE_ID=${NODE_ID:-HomeLab-Node}
-      - NODE_REGION=${NODE_REGION:-HomeLab-Proxmox}
+      - NODE_ID=${NODE_ID:-HomeLab-Proxmox}
+      - NODE_REGION=${NODE_REGION:-HomeLab-Local}
       - PORT=3000
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
@@ -18,3 +21,14 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
+
+  # Cloudflare Tunnel Daemon (Zero Trust - No open router ports needed)
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: portfolio-tunnel
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    depends_on:
+      - web
