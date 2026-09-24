@@ -16,9 +16,16 @@ export default {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
+      // Clone headers and set appropriate Host and Edge tracking headers
+      const primaryHeaders = new Headers(request.headers);
+      primaryHeaders.set('Host', primaryUrl.host);
+      primaryHeaders.set('X-Edge-Active-Node', 'HomeLab-Primario');
+      primaryHeaders.set('X-Forwarded-Host', url.host);
+      primaryHeaders.set('X-Forwarded-Proto', url.protocol.replace(':', ''));
+
       const primaryResponse = await fetch(primaryUrl.toString(), {
         method: request.method,
-        headers: request.headers,
+        headers: primaryHeaders,
         body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : null,
         redirect: 'manual',
         signal: controller.signal,
@@ -26,7 +33,7 @@ export default {
 
       clearTimeout(timeoutId);
 
-      // If primary responds cleanly (not server error)
+      // If primary responds cleanly (not server 5xx error)
       if (primaryResponse.status < 500) {
         const latency = Date.now() - startTime;
         const newHeaders = new Headers(primaryResponse.headers);
@@ -34,10 +41,13 @@ export default {
         newHeaders.set('X-Failover-Triggered', 'false');
         newHeaders.set('X-Edge-Latency-Ms', latency.toString());
 
+        // Expose headers to browser fetch
+        newHeaders.set('Access-Control-Expose-Headers', 'X-Active-Node, X-Failover-Triggered, X-Edge-Latency-Ms');
+
         return new Response(primaryResponse.body, {
           status: primaryResponse.status,
           statusText: primaryResponse.statusText,
-          headers: newHeaders
+          headers: newHeaders,
         });
       }
 
@@ -49,9 +59,15 @@ export default {
     // 2. Failover to Standby Origin (Oracle Cloud)
     try {
       const standbyUrl = new URL(url.pathname + url.search, env.STANDBY_ORIGIN);
+      const standbyHeaders = new Headers(request.headers);
+      standbyHeaders.set('Host', standbyUrl.host);
+      standbyHeaders.set('X-Edge-Active-Node', 'Cloud-Standby');
+      standbyHeaders.set('X-Forwarded-Host', url.host);
+      standbyHeaders.set('X-Forwarded-Proto', url.protocol.replace(':', ''));
+
       const standbyResponse = await fetch(standbyUrl.toString(), {
         method: request.method,
-        headers: request.headers,
+        headers: standbyHeaders,
         body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : null,
         redirect: 'manual',
       });
@@ -61,6 +77,8 @@ export default {
       newHeaders.set('X-Active-Node', 'Cloud-Standby');
       newHeaders.set('X-Failover-Triggered', 'true');
       newHeaders.set('X-Edge-Latency-Ms', latency.toString());
+
+      newHeaders.set('Access-Control-Expose-Headers', 'X-Active-Node, X-Failover-Triggered, X-Edge-Latency-Ms');
 
       return new Response(standbyResponse.body, {
         status: standbyResponse.status,

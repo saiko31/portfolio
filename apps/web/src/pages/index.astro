@@ -8,7 +8,7 @@ const hostname = os.hostname();
 const platform = `${os.type()} ${os.arch()}`;
 
 // Headers injected by Cloudflare Worker (when routed via the Edge Router)
-const activeNodeHeader = Astro.request.headers.get('x-active-node') || 'Direct (No Edge Worker)';
+const activeNodeHeader = Astro.request.headers.get('x-edge-active-node') || Astro.request.headers.get('x-active-node') || 'Direct (No Edge Worker)';
 const failoverHeader = Astro.request.headers.get('x-failover-triggered') || 'false';
 const edgeLatencyHeader = Astro.request.headers.get('x-edge-latency-ms') || 'N/A';
 ---
@@ -298,6 +298,23 @@ const edgeLatencyHeader = Astro.request.headers.get('x-edge-latency-ms') || 'N/A
           badge.textContent = `STATUS ${res.status}`;
           badge.className = 'badge badge-yellow';
         }
+
+        // Live edge telemetry update
+        const activeNode = res.headers.get('x-active-node');
+        const failover = res.headers.get('x-failover-triggered');
+        const edgeLatency = res.headers.get('x-edge-latency-ms');
+        if (activeNode) {
+          const el = document.getElementById('val-active-node');
+          if (el) el.textContent = activeNode;
+        }
+        if (failover !== null) {
+          const el = document.getElementById('val-failover');
+          if (el) el.textContent = failover === 'true' ? '⚠️ ACTIVE' : 'NORMAL';
+        }
+        if (edgeLatency) {
+          const el = document.getElementById('val-edge-latency');
+          if (el) el.textContent = `${edgeLatency} ms`;
+        }
       } catch (err) {
         badge.textContent = 'UNREACHABLE';
         badge.className = 'badge badge-red';
@@ -333,6 +350,7 @@ const edgeLatencyHeader = Astro.request.headers.get('x-edge-latency-ms') || 'N/A
     });
 
     // Initial poll and recurring loop every 2 seconds
+
     pollTelemetry();
     setInterval(pollTelemetry, 2000);
   </script>
