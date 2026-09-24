@@ -3,10 +3,10 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Copy root workspace and web package definitions
-COPY package.json ./
+COPY package.json package-lock.json ./
 COPY apps/web/package.json ./apps/web/
 
-# Install dependencies
+# Install dependencies across workspaces
 RUN npm install
 
 # Copy source files
@@ -23,10 +23,13 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
+# Copy root workspace dependencies
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+
 # Copy built application assets and server bundle
 COPY --from=builder /app/apps/web/dist ./dist
-COPY --from=builder /app/apps/web/node_modules ./node_modules
-COPY --from=builder /app/apps/web/package.json ./package.json
+COPY --from=builder /app/apps/web/package.json ./apps/web/package.json
 
 EXPOSE 3000
 
