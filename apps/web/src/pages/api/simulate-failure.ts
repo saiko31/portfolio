@@ -32,7 +32,15 @@ export const DELETE: APIRoute = async () => {
   );
 };
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ url }) => {
+  const action = url.searchParams.get('action');
+  if (action === 'trigger') {
+    const duration = Number(url.searchParams.get('duration')) || 30;
+    simulateFailure(duration);
+  } else if (action === 'reset') {
+    resetFailure();
+  }
+
   return new Response(
     JSON.stringify({
       isFailing: isFailing(),
